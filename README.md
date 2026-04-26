@@ -1,1 +1,536 @@
-# calculadora-imss-2026
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora IMSS 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d1117; --surface: #161b22; --surface2: #21262d;
+    --border: #30363d; --accent: #58a6ff; --text: #e6edf3;
+    --muted: #8b949e; --patron: #f0883e; --obrero: #58a6ff; --total: #3fb950;
+    --green: #3fb950; --purple: #d2a8ff;
+  }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'DM Mono', monospace; min-height: 100vh; padding: 2rem 1rem;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(88,166,255,0.08), transparent),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(63,185,80,0.05), transparent);
+  }
+  .container { max-width: 820px; margin: 0 auto; }
+  header { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .badge { display: inline-block; background: rgba(88,166,255,0.15); border: 1px solid rgba(88,166,255,0.3); color: var(--accent); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 0.8rem; }
+  h1 { font-family: 'DM Serif Display', serif; font-size: clamp(1.8rem,5vw,2.6rem); line-height: 1.1; margin-bottom: 0.4rem; }
+  h1 span { color: var(--accent); font-style: italic; }
+  .subtitle { color: var(--muted); font-size: 0.78rem; }
+
+/* Section headers */
+.section-header {
+display: flex; align-items: center; gap: 0.8rem;
+margin-bottom: 1rem; margin-top: 0.5rem;
+}
+.section-num {
+width: 28px; height: 28px; border-radius: 50%;
+display: flex; align-items: center; justify-content: center;
+font-size: 0.72rem; font-weight: 500; flex-shrink: 0;
+}
+.section-num.a { background: rgba(88,166,255,0.2); border: 1px solid rgba(88,166,255,0.4); color: var(–accent); }
+.section-num.b { background: rgba(63,185,80,0.2); border: 1px solid rgba(63,185,80,0.4); color: var(–green); }
+.section-title { font-size: 0.95rem; color: var(–text); }
+.section-sub { font-size: 0.68rem; color: var(–muted); }
+.section-divider { border: none; border-top: 1px solid var(–border); margin: 1.5rem 0; }
+
+.card { background: var(–surface); border: 1px solid var(–border); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.25rem; }
+.card-title { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(–muted); margin-bottom: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(–border); }
+.input-group { margin-bottom: 1rem; }
+label { display: block; font-size: 0.72rem; color: var(–muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.08em; }
+input[type=“number”], select { width: 100%; background: var(–surface2); border: 1px solid var(–border); border-radius: 6px; color: var(–text); font-family: ‘DM Mono’, monospace; font-size: 0.95rem; padding: 0.6rem 0.9rem; outline: none; transition: border-color 0.2s; appearance: none; }
+input[type=“number”]:focus, select:focus { border-color: var(–accent); box-shadow: 0 0 0 3px rgba(88,166,255,0.1); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
+@media (max-width: 580px) { .grid-2,.grid-3,.grid-4 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 380px) { .grid-2,.grid-3,.grid-4 { grid-template-columns: 1fr; } }
+
+.uma-note { background: rgba(88,166,255,0.07); border: 1px solid rgba(88,166,255,0.2); border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.7rem; color: var(–accent); margin-top: 0.8rem; }
+
+.btn { width: 100%; border: none; border-radius: 6px; font-family: ‘DM Mono’, monospace; font-size: 0.85rem; font-weight: 500; letter-spacing: 0.05em; padding: 0.75rem 1.5rem; cursor: pointer; transition: opacity 0.15s, transform 0.1s; text-transform: uppercase; }
+.btn-a { background: var(–accent); color: #0d1117; }
+.btn-b { background: var(–green); color: #0d1117; }
+.btn:hover { opacity: 0.85; } .btn:active { transform: scale(0.99); }
+
+/* Mode toggle for SBC section */
+.toggle-row { display: flex; background: var(–surface2); border: 1px solid var(–border); border-radius: 7px; padding: 3px; gap: 3px; margin-bottom: 1rem; }
+.toggle-btn { flex: 1; text-align: center; padding: 0.45rem 0.6rem; border-radius: 4px; font-family: ‘DM Mono’, monospace; font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; cursor: pointer; border: none; background: transparent; color: var(–muted); transition: all 0.15s; }
+.toggle-btn.active { background: var(–green); color: #0d1117; font-weight: 500; }
+.toggle-btn:hover:not(.active) { color: var(–text); }
+
+/* SBC result box */
+.sbc-result-box { background: rgba(88,166,255,0.07); border: 1px solid rgba(88,166,255,0.25); border-radius: 8px; padding: 1rem 1.2rem; margin-top: 1rem; display: none; }
+.sbc-result-box.show { display: block; }
+.sbc-res-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(–muted); margin-bottom: 0.3rem; }
+.sbc-res-formula { font-size: 0.72rem; color: var(–muted); margin-bottom: 0.5rem; line-height: 1.5; }
+.sbc-res-formula b { color: var(–accent); }
+.sbc-res-value { font-family: ‘DM Serif Display’, serif; font-size: 1.6rem; color: var(–accent); }
+.sbc-res-sub { font-size: 0.7rem; color: var(–muted); margin-top: 0.3rem; }
+
+/* Transfer button */
+.transfer-btn { display: flex; align-items: center; gap: 0.5rem; background: rgba(63,185,80,0.1); border: 1px solid rgba(63,185,80,0.3); border-radius: 6px; padding: 0.55rem 0.9rem; font-family: ‘DM Mono’, monospace; font-size: 0.72rem; color: var(–green); cursor: pointer; transition: all 0.15s; width: 100%; margin-top: 0.8rem; }
+.transfer-btn:hover { background: rgba(63,185,80,0.18); }
+.transfer-arrow { font-size: 1rem; }
+
+/* Cuotas section */
+.sbc-input-row { display: flex; align-items: flex-end; gap: 0.8rem; margin-bottom: 1rem; }
+.sbc-input-row .input-group { flex: 1; margin-bottom: 0; }
+.sbc-badge { background: rgba(210,168,255,0.12); border: 1px solid rgba(210,168,255,0.3); color: var(–purple); border-radius: 4px; font-size: 0.6rem; padding: 2px 7px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; align-self: flex-end; padding-bottom: 8px; }
+
+/* Results */
+#cuotas-results { display: none; }
+.rama { background: var(–surface); border: 1px solid var(–border); border-radius: 10px; margin-bottom: 1rem; overflow: hidden; }
+.rama-header { background: rgba(88,166,255,0.06); border-bottom: 1px solid rgba(88,166,255,0.15); padding: 0.65rem 1.1rem; display: flex; align-items: center; gap: 0.6rem; }
+.rama-num { background: var(–accent); color: #0d1117; font-size: 0.6rem; font-weight: 500; padding: 2px 8px; border-radius: 3px; letter-spacing: 0.04em; white-space: nowrap; }
+.rama-name { font-size: 0.78rem; color: var(–text); }
+.rama-subtotal { margin-left: auto; font-size: 0.72rem; white-space: nowrap; }
+.rama-subtotal .p { color: var(–patron); } .rama-subtotal .t { color: var(–obrero); }
+.concepto { display: grid; grid-template-columns: 1fr auto auto; gap: 0.4rem 1rem; align-items: start; padding: 0.6rem 1.1rem; border-bottom: 1px solid rgba(48,54,61,0.4); }
+.concepto:last-child { border-bottom: none; }
+.concepto-name { font-size: 0.73rem; color: var(–text); }
+.concepto-formula { font-size: 0.66rem; color: var(–muted); grid-column: 1; margin-top: 2px; }
+.concepto-group { display: flex; flex-direction: column; align-items: flex-end; min-width: 80px; }
+.concepto-label { font-size: 0.56rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(–muted); margin-bottom: 2px; }
+.concepto-val { font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+.val-p { color: var(–patron); } .val-t { color: var(–obrero); } .val-none { color: rgba(139,148,158,0.3); font-size: 0.7rem; }
+.resumen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+@media (max-width: 480px) { .resumen-grid { grid-template-columns: 1fr; } }
+.resumen-col { background: var(–surface2); border: 1px solid var(–border); border-radius: 8px; padding: 1rem; }
+.resumen-col-title { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.8rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(–border); }
+.resumen-col-title.p { color: var(–patron); } .resumen-col-title.t { color: var(–obrero); }
+.resumen-row { display: flex; justify-content: space-between; font-size: 0.76rem; margin-bottom: 0.4rem; }
+.resumen-row .rk { color: var(–muted); }
+.resumen-row.subtotal { border-top: 1px solid var(–border); padding-top: 0.5rem; margin-top: 0.3rem; }
+.resumen-row.subtotal .rv { font-family: ‘DM Serif Display’, serif; font-size: 1rem; color: var(–total); }
+.gran-total-box { background: rgba(63,185,80,0.08); border: 1px solid rgba(63,185,80,0.25); border-radius: 8px; padding: 0.9rem 1.2rem; display: flex; justify-content: space-between; align-items: center; }
+.gran-total-box .gt-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(–muted); }
+.gran-total-box .gt-val { font-family: ‘DM Serif Display’, serif; font-size: 1.6rem; color: var(–total); }
+.footer-note { color: var(–muted); font-size: 0.67rem; line-height: 1.6; margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid var(–border); }
+</style>
+
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">México · IMSS 2026</div>
+    <h1>Cuotas <span>Obrero-Patronales</span></h1>
+    <p class="subtitle">UMA 2026: $117.31 diaria · $3,566.22 mensual · Reforma Pensiones DOF 16-12-2020</p>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       APARTADO A — SBC
+  ══════════════════════════════════════════ -->
+
+  <div class="section-header">
+    <div class="section-num a">A</div>
+    <div>
+      <div class="section-title">Salario Base de Cotización</div>
+      <div class="section-sub">Calcula el SBC a partir del salario diario, o ingrésalo directamente</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="toggle-row">
+      <button class="toggle-btn active" id="toggle-calc" onclick="setSBCMode('calc')">Calcular desde salario diario</button>
+      <button class="toggle-btn" id="toggle-directo" onclick="setSBCMode('directo')">Ya tengo el SBC</button>
+    </div>
+
+```
+<!-- Modo: calcular SBC -->
+<div id="panel-calc">
+  <div class="grid-2">
+    <div class="input-group">
+      <label>Salario diario ($)</label>
+      <input type="number" id="salario-sd" placeholder="ej. 500.00" min="0" step="0.01">
+    </div>
+    <div class="input-group">
+      <label>Antigüedad</label>
+      <select id="antiguedad">
+        <option value="1">1 año (12 días vac)</option>
+        <option value="2" selected>2 años (14 días vac)</option>
+        <option value="3">3 años (16 días vac)</option>
+        <option value="4">4 años (18 días vac)</option>
+        <option value="5">5 años (20 días vac)</option>
+        <option value="6">6-10 años (22 días vac)</option>
+        <option value="11">11-15 años (24 días vac)</option>
+        <option value="16">16-20 años (26 días vac)</option>
+        <option value="21">21-25 años (28 días vac)</option>
+        <option value="26">26+ años (30 días vac)</option>
+      </select>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="input-group" style="margin-bottom:0">
+      <label>Días de aguinaldo</label>
+      <input type="number" id="aguinaldo" value="15" min="1" step="1">
+    </div>
+    <div class="input-group" style="margin-bottom:0">
+      <label>Prima vacacional (%)</label>
+      <input type="number" id="prima-vac" value="25" min="0" step="1">
+    </div>
+  </div>
+  <div class="uma-note" style="margin-top:1rem">ⓘ Factor = (365 + días_vac × prima% + aguinaldo) ÷ 365 &nbsp;·&nbsp; Tope SBC: 25 UMAs = $2,932.75/día</div>
+  <button class="btn btn-a" style="margin-top:1rem" onclick="calcularSBC()">Calcular SBC</button>
+</div>
+
+<!-- Modo: SBC directo -->
+<div id="panel-directo" style="display:none">
+  <div class="input-group">
+    <label>SBC diario ($)</label>
+    <input type="number" id="sbc-manual" placeholder="ej. 525.34" min="0" step="0.01">
+  </div>
+  <div class="uma-note">ⓘ Tope máximo: 25 UMAs = $2,932.75/día · Mínimo: 1 UMA = $117.31/día</div>
+  <button class="btn btn-a" style="margin-top:1rem" onclick="usarSBCManual()">Usar este SBC</button>
+</div>
+
+<!-- Resultado SBC -->
+<div class="sbc-result-box" id="sbc-result-box">
+  <div class="sbc-res-label">SBC calculado</div>
+  <div class="sbc-res-formula" id="sbc-formula-display">—</div>
+  <div class="sbc-res-value" id="sbc-valor-display">—</div>
+  <div class="sbc-res-sub" id="sbc-sub-display">—</div>
+  <button class="transfer-btn" onclick="transferirSBC()">
+    <span class="transfer-arrow">↓</span>
+    Usar este SBC en el apartado de cuotas
+  </button>
+</div>
+```
+
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- ══════════════════════════════════════════
+       APARTADO B — CUOTAS
+  ══════════════════════════════════════════ -->
+
+  <div class="section-header">
+    <div class="section-num b">B</div>
+    <div>
+      <div class="section-title">Cuotas Obrero-Patronales</div>
+      <div class="section-sub">Ingresa el SBC diario y los parámetros del período</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">// Parámetros de cálculo</div>
+    <div class="grid-3">
+      <div class="input-group">
+        <label>SBC diario ($)</label>
+        <div style="position:relative">
+          <input type="number" id="sbc-cuotas" placeholder="ej. 525.34" min="0" step="0.01">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>Días del período</label>
+        <input type="number" id="dias" value="28" min="1" max="31" step="1">
+      </div>
+      <div class="input-group">
+        <label>Clase de riesgo</label>
+        <select id="riesgo">
+          <option value="0.54355">Clase I — 0.54355%</option>
+          <option value="1.13065">Clase II — 1.13065%</option>
+          <option value="2.59840">Clase III — 2.59840%</option>
+          <option value="4.65325">Clase IV — 4.65325%</option>
+          <option value="7.58875">Clase V — 7.58875%</option>
+        </select>
+      </div>
+    </div>
+    <div class="uma-note">ⓘ UMA diaria 2026: $117.31 · Excedente EM: 3 UMAs = $351.93/día · Sal. mín. general: $315.04/día</div>
+  </div>
+
+<button class="btn btn-b" onclick="calcularCuotas()">Calcular cuotas obrero-patronales</button>
+
+  <div id="cuotas-results">
+    <div style="margin-top:1.5rem"></div>
+
+```
+<!-- SBC usado -->
+<div style="background:rgba(63,185,80,0.06);border:1px solid rgba(63,185,80,0.2);border-radius:8px;padding:0.7rem 1.1rem;margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center">
+  <span style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em">SBC utilizado</span>
+  <span id="sbc-usado-display" style="font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--green)">—</span>
+</div>
+
+<div id="ramas-container"></div>
+
+<div class="card" style="margin-top:0.5rem">
+  <div class="card-title">// Resumen</div>
+  <div class="resumen-grid">
+    <div class="resumen-col">
+      <div class="resumen-col-title p">Patrón</div>
+      <div id="resumen-patron"></div>
+    </div>
+    <div class="resumen-col">
+      <div class="resumen-col-title t">Trabajador</div>
+      <div id="resumen-obrero"></div>
+    </div>
+  </div>
+  <div class="gran-total-box">
+    <div>
+      <div class="gt-label">Total IMSS + INFONAVIT</div>
+      <div style="font-size:0.65rem;color:var(--muted);margin-top:2px">Costo total del trabajador para el patrón</div>
+    </div>
+    <div class="gt-val" id="gran-total">—</div>
+  </div>
+  <div class="footer-note">
+    * Cuota fija EM se calcula sobre UMA diaria × días del período.<br>
+    * Cuota patronal CyV es progresiva por rango SBC/UMA (Reforma DOF 16-12-2020).<br>
+    * No incluye ISR ni otras retenciones de nómina.
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<script>
+const UMA_DIARIA = 117.31;
+const VACACIONES = {1:12,2:14,3:16,4:18,5:20,6:22,11:24,16:26,21:28,26:30};
+
+function fmt(n){ return '$'+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+
+// ── Modo toggle SBC ──
+function setSBCMode(mode){
+  const isCalc = mode === 'calc';
+  document.getElementById('panel-calc').style.display    = isCalc ? 'block' : 'none';
+  document.getElementById('panel-directo').style.display = isCalc ? 'none'  : 'block';
+  document.getElementById('toggle-calc').classList.toggle('active', isCalc);
+  document.getElementById('toggle-directo').classList.toggle('active', !isCalc);
+  document.getElementById('sbc-result-box').classList.remove('show');
+}
+
+// ── Calcular SBC desde salario diario ──
+function calcularSBC(){
+  const sd = parseFloat(document.getElementById('salario-sd').value);
+  if(!sd||sd<=0){ alert('Ingresa un salario diario válido'); return; }
+  const ant      = parseInt(document.getElementById('antiguedad').value);
+  const aguinaldo = parseFloat(document.getElementById('aguinaldo').value) || 15;
+  const primaVac  = parseFloat(document.getElementById('prima-vac').value) / 100 || 0.25;
+  const diasVac   = VACACIONES[ant] || 14;
+  const factor    = (365 + diasVac * primaVac + aguinaldo) / 365;
+
+  let S = sd * factor;
+  const topeMax = UMA_DIARIA * 25;
+  if(S > topeMax) S = topeMax;
+  if(S < UMA_DIARIA) S = UMA_DIARIA;
+
+  const box = document.getElementById('sbc-result-box');
+  document.getElementById('sbc-formula-display').innerHTML =
+    `Factor = (365 + ${diasVac}×${(primaVac*100).toFixed(0)}% + ${aguinaldo}) ÷ 365 = <b>${factor.toFixed(5)}</b><br>` +
+    `SBC = ${fmt(sd)} × ${factor.toFixed(5)} = <b>${fmt(S)}/día</b>`;
+  document.getElementById('sbc-valor-display').textContent = fmt(S) + ' / día';
+  document.getElementById('sbc-sub-display').textContent   =
+    `${diasVac} días de vacaciones · Aguinaldo ${aguinaldo} días · Prima vacacional ${(primaVac*100).toFixed(0)}%`;
+  box.dataset.sbc = S.toFixed(6);
+  box.classList.add('show');
+}
+
+// ── Usar SBC manual ──
+function usarSBCManual(){
+  const v = parseFloat(document.getElementById('sbc-manual').value);
+  if(!v||v<=0){ alert('Ingresa un SBC válido'); return; }
+  const topeMax = UMA_DIARIA * 25;
+  const S = Math.min(Math.max(v, UMA_DIARIA), topeMax);
+
+  const box = document.getElementById('sbc-result-box');
+  document.getElementById('sbc-formula-display').innerHTML = `SBC ingresado manualmente`;
+  document.getElementById('sbc-valor-display').textContent = fmt(S) + ' / día';
+  document.getElementById('sbc-sub-display').textContent   =
+    S !== v ? `Ajustado al tope/mínimo aplicable` : `Dentro de los límites legales`;
+  box.dataset.sbc = S.toFixed(6);
+  box.classList.add('show');
+}
+
+// ── Transferir SBC al apartado B ──
+function transferirSBC(){
+  const S = parseFloat(document.getElementById('sbc-result-box').dataset.sbc);
+  if(!S) return;
+  document.getElementById('sbc-cuotas').value = S.toFixed(2);
+  document.getElementById('sbc-cuotas').style.borderColor = 'var(--green)';
+  setTimeout(()=>{ document.getElementById('sbc-cuotas').style.borderColor=''; }, 2000);
+  document.getElementById('sbc-cuotas').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+// ── CyV patronal progresiva 2026 ──
+function getCyVPatron(s){
+  const r = s / UMA_DIARIA;
+  if(r<=1.0)  return 0.03150;
+  if(r<=1.50) return 0.03281;
+  if(r<=2.00) return 0.03768;
+  if(r<=2.50) return 0.04226;
+  if(r<=3.00) return 0.04684;
+  if(r<=4.00) return 0.05142;
+  if(r<=5.00) return 0.05600;
+  if(r<=6.00) return 0.06058;
+  if(r<=7.00) return 0.06516;
+  if(r<=8.00) return 0.06974;
+  if(r<=9.00) return 0.07432;
+  if(r<=10.0) return 0.07890;
+  if(r<=12.0) return 0.08348;
+  if(r<=15.0) return 0.09000;
+  return 0.09500;
+}
+
+// ── Generar HTML de rama ──
+function ramaHTML(num, nombre, conceptos, totPat, totObr){
+  let rows = '';
+  for(const c of conceptos){
+    rows += `<div class="concepto">
+      <div>
+        <div class="concepto-name">${c.name}</div>
+        ${c.formula ? `<div class="concepto-formula">${c.formula}</div>` : ''}
+      </div>
+      <div class="concepto-group">
+        <div class="concepto-label">Patrón</div>
+        <div class="concepto-val ${c.pat!=null?'val-p':'val-none'}">${c.pat!=null?fmt(c.pat):'—'}</div>
+      </div>
+      <div class="concepto-group">
+        <div class="concepto-label">Trabajador</div>
+        <div class="concepto-val ${c.obr!=null?'val-t':'val-none'}">${c.obr!=null?fmt(c.obr):'—'}</div>
+      </div>
+    </div>`;
+  }
+  const sub = (totPat!=null ? `<span class="p">${fmt(totPat)}</span>` : '') +
+              (totObr!=null ? ` / <span class="t">${fmt(totObr)}</span>` : '');
+  return `<div class="rama">
+    <div class="rama-header">
+      <span class="rama-num">Rama ${num}</span>
+      <span class="rama-name">${nombre}</span>
+      <span class="rama-subtotal">${sub}</span>
+    </div>
+    <div class="rama-body">${rows}</div>
+  </div>`;
+}
+
+// ── Calcular cuotas ──
+function calcularCuotas(){
+  const S = parseFloat(document.getElementById('sbc-cuotas').value);
+  if(!S||S<=0){ alert('Ingresa el SBC diario en el apartado B'); return; }
+  const dias = parseInt(document.getElementById('dias').value) || 28;
+  const riesgoTasa = parseFloat(document.getElementById('riesgo').value);
+
+  document.getElementById('sbc-usado-display').textContent = fmt(S) + '/día × ' + dias + ' días = ' + fmt(S * dias);
+
+  // Rama I
+  const rtPat = S * (riesgoTasa/100) * dias;
+  const clases = [0.54355,1.13065,2.59840,4.65325,7.58875];
+  const claseIdx = clases.indexOf(riesgoTasa);
+  const claseNombre = ['I','II','III','IV','V'][claseIdx] || '?';
+  const ramaI = ramaHTML('I','Riesgos de Trabajo',[{
+    name: `RT — Clase ${claseNombre} (${riesgoTasa.toFixed(5)}%)`,
+    formula: `${riesgoTasa.toFixed(5)}% × ${fmt(S)} × ${dias} días`,
+    pat: rtPat, obr: null
+  }], rtPat, null);
+
+  // Rama II
+  const emFijaPat = UMA_DIARIA * 0.2040 * dias;
+  const excedD    = Math.max(0, S - 3 * UMA_DIARIA);
+  const emExcPat  = excedD * 0.0110 * dias;
+  const emExcObr  = excedD * 0.0040 * dias;
+  const emDinPat  = S * 0.0070 * dias;
+  const emDinObr  = S * 0.0025 * dias;
+  const gmpPat    = S * 0.0105 * dias;
+  const gmpObr    = S * 0.00375 * dias;
+  const emTotPat  = emFijaPat + emExcPat + emDinPat + gmpPat;
+  const emTotObr  = emExcObr + emDinObr + gmpObr;
+  const ramaII = ramaHTML('II','Enfermedad y Maternidad',[
+    { name: '2.1 Cuota fija del patrón (sobre UMA)',
+      formula: `0.2040 × $${UMA_DIARIA} × ${dias} días`,
+      pat: emFijaPat, obr: null },
+    { name: '2.2 Prestaciones en especie — excedente 3 UMAs',
+      formula: excedD > 0
+        ? `(P) 0.0110 × ${fmt(excedD)} × ${dias}  |  (T) 0.0040 × ${fmt(excedD)} × ${dias}`
+        : `SBC no excede 3 UMAs (${fmt(3*UMA_DIARIA)}/día)`,
+      pat: emExcPat>0?emExcPat:null, obr: emExcObr>0?emExcObr:null },
+    { name: '2.3 Prestaciones en dinero',
+      formula: `(P) 0.0070 × ${fmt(S)} × ${dias}  |  (T) 0.0025 × ${fmt(S)} × ${dias}`,
+      pat: emDinPat, obr: emDinObr },
+    { name: '2.4 Gastos Médicos Pensionados',
+      formula: `(P) 0.0105 × ${fmt(S)} × ${dias}  |  (T) 0.00375 × ${fmt(S)} × ${dias}`,
+      pat: gmpPat, obr: gmpObr }
+  ], emTotPat, emTotObr);
+
+  // Rama III
+  const ivPat = S * 0.0175 * dias;
+  const ivObr = S * 0.00625 * dias;
+  const ramaIII = ramaHTML('III','Invalidez y Vida',[{
+    name: 'Invalidez y Vida',
+    formula: `(P) 0.0175 × ${fmt(S)} × ${dias}  |  (T) 0.00625 × ${fmt(S)} × ${dias}`,
+    pat: ivPat, obr: ivObr
+  }], ivPat, ivObr);
+
+  // Rama IV
+  const retPat    = S * 0.02 * dias;
+  const cyVTasa   = getCyVPatron(S);
+  const cyVPat    = S * cyVTasa * dias;
+  const cyVObr    = S * 0.01125 * dias;
+  const rcvTotPat = retPat + cyVPat;
+  const ramaIV = ramaHTML('IV','Retiro, Cesantía en Edad Avanzada y Vejez',[
+    { name: '4.1 Retiro (Patrón 2%)',
+      formula: `0.02 × ${fmt(S)} × ${dias} días`,
+      pat: retPat, obr: null },
+    { name: `4.2 Cesantía y Vejez — (P) ${(cyVTasa*100).toFixed(4)}% · (T) 1.125%`,
+      formula: `SBC/UMA = ${(S/UMA_DIARIA).toFixed(4)} → tasa patrón ${(cyVTasa*100).toFixed(4)}%  |  (T) 0.01125 × ${fmt(S)} × ${dias}`,
+      pat: cyVPat, obr: cyVObr }
+  ], rcvTotPat, cyVObr);
+
+  // Rama V
+  const guardPat = S * 0.01 * dias;
+  const ramaV = ramaHTML('V','Guarderías y Prestaciones Sociales',[{
+    name: 'Guarderías y Prestaciones Sociales (solo patrón)',
+    formula: `0.01 × ${fmt(S)} × ${dias} días`,
+    pat: guardPat, obr: null
+  }], guardPat, null);
+
+  // INFONAVIT
+  const infonavit = S * 0.05 * dias;
+  const ramaInfo = ramaHTML('—','INFONAVIT (Vivienda)',[{
+    name: 'Aportación patronal vivienda',
+    formula: `0.05 × ${fmt(S)} × ${dias} días`,
+    pat: infonavit, obr: null
+  }], infonavit, null);
+
+  document.getElementById('ramas-container').innerHTML = ramaI+ramaII+ramaIII+ramaIV+ramaV+ramaInfo;
+
+  const totPatIMSS = rtPat + emTotPat + ivPat + rcvTotPat + guardPat;
+  const totObrIMSS = emTotObr + ivObr + cyVObr;
+  const granTotal  = totPatIMSS + infonavit + totObrIMSS;
+
+  const rpa = [['RT',rtPat],['EM',emTotPat],['IV',ivPat],['RCV',rcvTotPat],['GPS',guardPat],['INFONAVIT',infonavit]];
+  let rph='', ptotal=0;
+  for(const[k,v] of rpa){
+    ptotal += v;
+    rph += `<div class="resumen-row"><span class="rk">${k}</span><span class="rv" style="color:var(--patron)">${fmt(v)}</span></div>`;
+  }
+  rph += `<div class="resumen-row subtotal"><span class="rk">Total</span><span class="rv">${fmt(ptotal)}</span></div>`;
+
+  const roa = [['EM',emTotObr],['IV',ivObr],['RCV',cyVObr]];
+  let roh='', ototal=0;
+  for(const[k,v] of roa){
+    ototal += v;
+    roh += `<div class="resumen-row"><span class="rk">${k}</span><span class="rv" style="color:var(--obrero)">${fmt(v)}</span></div>`;
+  }
+  roh += `<div class="resumen-row subtotal"><span class="rk">Total</span><span class="rv">${fmt(ototal)}</span></div>`;
+
+  document.getElementById('resumen-patron').innerHTML = rph;
+  document.getElementById('resumen-obrero').innerHTML = roh;
+  document.getElementById('gran-total').textContent = fmt(granTotal);
+
+  document.getElementById('cuotas-results').style.display = 'block';
+  document.getElementById('cuotas-results').scrollIntoView({behavior:'smooth', block:'start'});
+}
+</script>
+
+</body>
+</html>
